@@ -1,0 +1,7 @@
+pandas==1.0.1
+requests==2.23.0
+matplotlib==3.2.1
+pybitflyer
+mpl_finance
+datetime
+tqdm

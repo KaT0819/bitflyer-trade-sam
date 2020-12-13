@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  bitflyer-trade-sam
+
+  Sample SAM Template for bitflyer-trade-sam
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 40
+    MemorySize: 256
+    Environment:
+      Variables:
+        PRODUCT_CODE: FX_BTC_JPY
+        ORDER_LOT: 0.02
+        LOSSCUT_LINE: 0.3
+        ORDER_MODE: 1
+        LEVErAGE: 4
+        PERIOD: 60
+        API_KEY: /bitflyer/api/key
+        API_SECRET: /bitflyer/api/secret
+        DISCORD_URL: /notification/discord/url
+        SLACK_URL: /notification/slack/url
+        SLACK_TOKEN: /notification/slack/token
+    # Layers: 
+    # - Ref: BitflyerTradeLyer
+
+Resources:
+  BitflyerTradeSamFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda_function/
+      Handler: trade.lambda_handler
+      Runtime: python3.8
+    Policies:
+      - AmazonSSMReadonlyAccess
+
+  # # Lambda Layer
+  # BitflyerTradeLyer:
+  #   Type: AWS::Serverless::LayerVersion
+  #   Properties:
+  #     LayerName: bitflyer-trade-sam-layer
+  #     Description: "bitflyer-trade用共通処理"
+  #     ContentUri: service/
+  #     CompatibleRuntimes:
+  #       - python3.8
+  #   Metadata:
+  #     BuildMethod: python3.8
+
+
+
+Outputs:
+  BitflyerTradeSamFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt BitflyerTradeSamFunction.Arn
+  BitflyerTradeSamFunctionIamRole:
+    Description: "Implicit IAM Role created for Function"
+    Value: !GetAtt BitflyerTradeSamFunction.Arn
