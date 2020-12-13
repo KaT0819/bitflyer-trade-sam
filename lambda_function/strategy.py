@@ -18,7 +18,7 @@ def execute(df):
 
     # 使用するテクニカル指標を作成します。DataFrameでの処理をしていますので、分からない部分は随時ググってください。
     # ここでは、各テクニカル指標で使用する際の期間を列挙しています。なので、購入者の好みに合わせて期間を変更してください。
-    para = [14, 12, 26, 9, 20, 5, 25, 75]
+    para = [14, 12, 26, 9, 20, 25, 75, 200]
     # RSIの作成
     RSI = (100*dd.diff()[dd.diff() >= 0].fillna(0).rolling(window=para[0]).mean()/(dd.diff()[dd.diff() >= 0].fillna(
         0).rolling(window=para[0]).mean()+dd.diff()[dd.diff() < 0].abs().fillna(0).rolling(window=para[0]).mean())).close
@@ -68,7 +68,7 @@ def execute(df):
                                        dd.close.shift((i+1))).fillna(0)
 
     # 少し長めの範囲の価格変動データも追加する
-    num = [36, 72, 144]
+    num = [25, 75, 200]
     for i in num:
         # SEMA：5本分の指数平滑移動平均の変動幅
         all_sig['SEMA'+str(i)] = regu*(SEMA - SEMA.shift(i+1)).fillna(0)
