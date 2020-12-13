@@ -7,9 +7,6 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import requests
 # from mpl_finance import candlestick_ohlc
@@ -71,71 +68,6 @@ def get_data(period, size, from_date):
 
 def dt_now():
     return datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')
-
-
-# 単純移動平均 (SMA)
-def sma(ohlc: DataFrame, period=21) -> Series:
-    return Series(
-        ohlc['close'].rolling(period).mean(),
-        name=f'SMA {period}',
-    )
-
-    # sma(df, 5).plot.line(color='y', legend=True)
-    # sma(df, 10).plot.line(color='c', legend=True)
-    # sma(df, 21).plot.line(color='m', legend=True)
-
-
-# 指数平滑移動平均 (EMA)
-def ema(ohlc: DataFrame, expo=21) -> Series:
-    return Series(
-        ohlc['close'].ewm(span=expo).mean(),
-        name=f'EMA {expo}',
-    )
-
-    # ema(df, 5).plot.line(color='y', legend=True)
-    # ema(df, 10).plot.line(color='c', legend=True)
-    # ema(df, 21).plot.line(color='m', legend=True)
-
-
-# 加重移動平均 (WMA)
-def wma(ohlc: DataFrame, period: int = 9) -> Series:
-    # WMA = ( 価格 * n + 価格(1) * n-1 + ... 価格(n-1) * 1) / ( n * (n+1) / 2 )
-    denominator = (period * (period + 1)) / 2
-    weights = Series(np.arange(1, period + 1)).iloc[::-1]
-
-    return Series(
-        ohlc['close'].rolling(period, min_periods=period).apply(lambda x: np.sum(weights * x) / denominator, raw=True),
-        name=f'WMA {period}'
-    )
-    # wma(df, 5).plot.line(color='y', legend=True)
-    # wma(df, 10).plot.line(color='c', legend=True)
-    # wma(df, 21).plot.line(color='m', legend=True)
-
-
-# 標準偏差
-def sd(ohlc: DataFrame, period=10, ddof=0) -> float:
-    return ohlc['close'].tail(period).std(ddof=ddof)
-
-# >>> sd(df, ddof=0)
-# 232.7845570479279
-# >>> sd(df, ddof=1)
-# 245.37646812828467
-
-
-def plot(df):
-    plt.style.use('ggplot')
-
-    ax = plt.subplot()
-    ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%D:%M', tz=timezone(timedelta(hours=9))))
-
-    # candlestick_ohlc の第二引数に渡すタプルイテレータを生成
-    # @see https://github.com/matplotlib/mpl_finance/blob/master/mpl_finance.py
-    # quotes = zip(mdates.date2num(df.index), df['open'], df['high'], df['low'], df['close'])
-    # candlestick_ohlc(ax, quotes, width=(1/24/len(df))*0.7, colorup='g', colordown='r')
-
-    plt.show()
-
 
 
 # タイムゾーンの生成

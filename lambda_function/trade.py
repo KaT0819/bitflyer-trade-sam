@@ -8,7 +8,6 @@ import time
 from datetime import datetime, timedelta, timezone
 
 import numpy as np
-import pandas as pd
 import pybitflyer
 import requests
 
@@ -31,9 +30,9 @@ bitflyer = mybitflyer.MyBitflyerOrder(cfg.API_KEY, cfg.API_SECRET)
 def lambda_handler(event, context):
     trade()
 
-    return {'statusCode': 200,
-            'body': {'success'},
-            'headers': {'Content-Type': 'application/json'}}
+    return {"statusCode": 200,
+            "body": "success",
+            "headers": {"Content-Type": "application/json"}}
 
 
 def load_learn_data(ex_pair, period):
@@ -415,30 +414,24 @@ def trade():
         change = 0
 
 
+    # msg = {"稼働時刻": start_dt_now, "稼働証拠金": f"{start_collate:,}", "現在証拠金": f"{collate:,}", "損益": f"{collate-start_collate:,}", "avg_price": f"{avg_price:,}",
+    #       "pos_side": pos_side, "pos_size": round(pos_size, 8), "評価損益": pnl}
+    msg = {"現在証拠金": f"{collate:,}", "損益": f"{collate-start_collate:,}",
+            "評価損益": f"{int(pnl):,}", "pos_side": pos_side}
 
-    # ログ出力時間毎
-    if minute % 60 != 0:
-        log_send_flg = 0
+    print(dt_now(), msg)
+    notification(json.dumps(msg, ensure_ascii=False))
+    # cnt = 0
 
-    if minute % 60 == 0 and log_send_flg == 0:
-        # msg = {"稼働時刻": start_dt_now, "稼働証拠金": f"{start_collate:,}", "現在証拠金": f"{collate:,}", "損益": f"{collate-start_collate:,}", "avg_price": f"{avg_price:,}",
-        #       "pos_side": pos_side, "pos_size": round(pos_size, 8), "評価損益": pnl}
-        msg = {"現在証拠金": f"{collate:,}", "損益": f"{collate-start_collate:,}",
-               "評価損益": f"{int(pnl):,}", "pos_side": pos_side}
+    # # 損益書き込み
+    # my_makedirs('logs')
 
-        print(dt_now(), msg)
-        notification(json.dumps(msg, ensure_ascii=False))
-        # cnt = 0
-
-        # # 損益書き込み
-        # my_makedirs('logs')
-
-        # dt_log = datetime.now(JST).strftime('%Y-%m-%d')
-        # f = open('logs/order_' + dt_log + '.log', 'a')
-        # f.write(dt_now() + " " + json.dumps(msg, ensure_ascii=False) + '\n')
-        # f.close()
-        # log_send_flg = 1
+    # dt_log = datetime.now(JST).strftime('%Y-%m-%d')
+    # f = open('logs/order_' + dt_log + '.log', 'a')
+    # f.write(dt_now() + " " + json.dumps(msg, ensure_ascii=False) + '\n')
+    # f.close()
+    # log_send_flg = 1
 
 
 if __name__ == "__main__":
-    trade()
+    lambda_handler(None, None)
